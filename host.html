@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Создатели · Ведущий</title>
+<style>
+  :root{--green:#6aa80f;--green-d:#4d7d0a;--lime:#c7e02b;--ink:#1c2b16;--muted:#6f7d66;
+        --bg:#f3f6ec;--line:#e3ead6;--good:#3aa657;--bad:#d9443a;--zero:#9fb0a0;--rep:#e8a90c}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:linear-gradient(100deg,var(--green),var(--green-d));color:#fff;padding:12px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 14px rgba(0,0,0,.12)}
+  header .logo{font-weight:800;font-size:20px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tbtn{background:rgba(255,255,255,.15);border:0;color:#fff;padding:9px 16px;border-radius:30px;font-weight:700;cursor:pointer;font-size:14px}
+  .tbtn.on{background:var(--lime);color:var(--ink)}
+  .sp{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .status{font-size:12px;opacity:.85}
+  .btn{border:0;border-radius:11px;padding:9px 16px;font-weight:800;font-size:14px;cursor:pointer}
+  .btn.primary{background:var(--lime);color:var(--ink)} .btn.ghost{background:rgba(255,255,255,.18);color:#fff}
+  .wrap{max-width:1320px;margin:0 auto;padding:22px}
+  .tab{display:none} .tab.active{display:block}
+  h2{font-size:18px;margin:6px 0 14px}
+
+  .sh{display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11px;flex:none}
+  .sh.loy{width:24px;height:24px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+  .sh.eff{width:21px;height:21px;border-radius:6px} .sh.sig{width:22px;height:22px;border-radius:50%}
+  .sh.p{background:var(--good)}.sh.n{background:var(--bad)}.sh.z{background:var(--zero)}
+  .star{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--rep);color:#fff;font-weight:800;font-size:12px}
+
+  /* ТАЙМЕР */
+  .timer{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;text-align:center;margin-bottom:26px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+  .tdisp{font-size:96px;font-weight:900;line-height:1;letter-spacing:2px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .tdisp.warn{color:var(--rep)} .tdisp.done{color:var(--bad)}
+  .tctrls{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:18px;flex-wrap:wrap}
+  .tbig{width:74px;height:74px;border-radius:50%;border:0;font-size:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+  .tplay{background:var(--green);color:#fff} .treset{background:#fff;border:2px solid var(--line);color:var(--muted)}
+  .tadj{background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 16px;font-weight:800;font-size:15px;cursor:pointer;color:var(--ink)}
+  .tpreset{background:#f6fae9;border:2px solid var(--green);border-radius:12px;padding:10px 16px;font-weight:800;font-size:14px;cursor:pointer;color:var(--green-d)}
+  .tsep{width:1px;height:34px;background:var(--line)}
+
+  /* инновации */
+  .epsel{display:flex;gap:8px;margin-bottom:14px}
+  .epb{border:2px solid var(--line);background:#fff;border-radius:10px;padding:7px 14px;font-weight:700;cursor:pointer;color:var(--muted)}
+  .epb.on{border-color:var(--green);background:#f6fae9;color:var(--green-d)}
+  .inncols{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+  .ic{border:2px solid var(--line);border-radius:14px;background:#fff;padding:9px;text-align:center;cursor:pointer;position:relative;transition:.12s}
+  .ic:hover{border-color:var(--lime)} .ic.open{border-color:var(--green);background:#f6fae9;box-shadow:0 0 0 3px rgba(106,168,15,.18)} .ic.dim{opacity:.5}
+  .ic img{width:100%;border-radius:9px;margin-bottom:6px}
+  .ic .nm{font-weight:800;font-size:13px;line-height:1.15} .ic .ef{font-size:11px;color:var(--green-d);margin-top:4px;font-weight:600}
+  .ic .votes{position:absolute;top:7px;right:7px;background:var(--ink);color:#fff;border-radius:20px;font-size:11px;font-weight:800;padding:2px 8px}
+  .ic .state{margin-top:6px;font-size:11px;font-weight:800;color:var(--muted)} .ic.open .state{color:var(--green-d)}
+
+  /* таблицы */
+  table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+  th,td{padding:12px 10px;text-align:center;border-bottom:1px solid var(--line)}
+  th{background:#f6fae9;font-size:11px;color:var(--green-d);font-weight:800;text-transform:uppercase}
+  th .ic2{display:flex;flex-direction:column;align-items:center;gap:4px}
+  td.team{text-align:left;font-weight:800;font-size:15px;white-space:nowrap}
+  .val{font-weight:800;font-size:16px}.val.p{color:var(--good)}.val.n{color:var(--bad)}.val.z{color:var(--muted)}
+  .coef{font-weight:700;color:var(--muted)} .total{font-weight:900;font-size:20px;color:var(--green-d)}
+  tr.top td{background:#fbfdf3} tr:last-child td{border-bottom:0} .rank{font-size:20px}
+  .empty{padding:30px;text-align:center;color:var(--muted)} .colsep{border-left:2px solid var(--line)}
+
+  /* презентация */
+  .pdfwrap{background:#1c2b16;border-radius:16px;padding:16px;display:flex;justify-content:center;align-items:center;min-height:76vh;position:relative}
+  #pdfCanvas{max-width:100%;max-height:82vh;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.4);background:#fff}
+  .pdfempty{position:absolute;color:rgba(255,255,255,.5);font-size:14px}
+  .pdffoot{display:flex;gap:20px;align-items:center;justify-content:center;margin-top:10px}
+  .subtle{background:none;border:0;color:var(--muted);font-size:12px;cursor:pointer;opacity:.65}
+  .subtle:hover{opacity:1;color:var(--green-d)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">СОЗДАТЕЛИ · ВЕДУЩИЙ</div>
+  <div class="tabs" id="tabs"></div>
+  <div class="sp"><span class="status" id="status"></span><button class="btn ghost" onclick="refresh()">↻ Обновить</button></div>
+</header>
+
+<div class="wrap">
+  <!-- ХРОНИКИ -->
+  <div class="tab" id="tab-chronicle">
+    <div class="pdfwrap" id="pdfWrap">
+      <div class="pdfempty" id="pdfEmpty">Презентация не загружена — кнопка внизу</div>
+      <canvas id="pdfCanvas"></canvas>
+    </div>
+    <div class="pdffoot">
+      <button class="subtle" onclick="pdfFull()">⛶ во весь экран · листать ← →</button>
+      <span id="pdfInfo" class="subtle"></span>
+      <label class="subtle">↑ загрузить презентацию<input type="file" accept="application/pdf" hidden onchange="loadPdf(event)"></label>
+    </div>
+  </div>
+
+  <!-- КАРТА ИННОВАЦИЙ (таймер + инновации) -->
+  <div class="tab" id="tab-round">
+    <div class="timer">
+      <div class="tdisp" id="tDisp">25:00</div>
+      <div class="tctrls">
+        <button class="tbig treset" onclick="tReset()" title="Сброс">
+          <svg viewBox="0 0 24 24" width="26" height="26"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg></button>
+        <button class="tbig tplay" id="tPlay" onclick="tToggle()" title="Старт/пауза"></button>
+        <div class="tsep"></div>
+        <button class="tadj" onclick="tAdd(-5)">−5</button>
+        <button class="tadj" onclick="tAdd(-1)">−1</button>
+        <button class="tadj" onclick="tAdd(1)">+1</button>
+        <button class="tadj" onclick="tAdd(5)">+5</button>
+        <div class="tsep"></div>
+        <button class="tpreset" onclick="tSet(25)">25 мин</button>
+        <button class="tpreset" onclick="tSet(10)">10 мин</button>
+      </div>
+    </div>
+    <h2>💡 Карта инноваций</h2>
+    <div class="epsel" id="roundEpSel"></div>
+    <div class="inncols" id="innCols"></div>
+  </div>
+
+  <!-- ЭПОХИ I/II/III -->
+  <div class="tab" id="tab-ep1"><h2>Эпоха I · Античность</h2><div id="res-Античность"></div></div>
+  <div class="tab" id="tab-ep2"><h2>Эпоха II · Наше время</h2><div id="res-Наше время"></div></div>
+  <div class="tab" id="tab-ep3"><h2>Эпоха III · Будущее</h2><div id="res-Будущее"></div></div>
+
+  <!-- ИТОГИ -->
+  <div class="tab" id="tab-final"><h2>🏆 Итоги игры <span style="color:var(--muted);font-weight:600;font-size:14px">— сумма Репутации за все эпохи</span></h2><div id="res-final"></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbx2UeV8gJQNx1ODl95nnUygWnXhAkPSw6zl0WWEsizc0h7iZat0a5JmcaHVG5Vkhj9JWA/exec";
+const BASE_URL="";   // ПУСТО = локально. Для Tilda вставь сюда URL GitHub Pages со / на конце, напр. https://USER.github.io/REPO/
+const EPOCHS=["Античность","Наше время","Будущее"], LAST_EPOCH="Будущее";
+let totals=[], opened=[], roundEpoch="Античность";
+
+const TABS=[["chronicle","🎬 Хроники"],["round","⏱ Карта инноваций"],
+  ["ep1","Эпоха I"],["ep2","Эпоха II"],["ep3","Эпоха III"],["final","🏆 Итоги"]];
+const ID="Эпоха 1/Карточки инноваций/", IT=" - карточки инноваций - античность - 104х148 с полями 3 мм под обрез.png";
+const INN={"Античность":[
+  {id:"a18",n:"Инвестиционные фонды",v:6,e:"+1 Влияние (нач. след. эпохи)"},
+  {id:"a19",n:"Ценные бумаги",v:5,e:"+10 Репутации (если все запросы обработаны)"},
+  {id:"a20",n:"Государственные банки",v:9,e:"+5 к Социальной значимости"},
+  {id:"a21",n:"Коммерческие банки",v:7,e:"+5 к Экономической эффективности"},
+  {id:"a22",n:"Страховые компании",v:10,e:"+5 к Лояльности клиентов"},
+  {id:"a23",n:"Риск-консультации для бизнеса",v:3,e:"+10 Репутации (условно)"}],
+  "Наше время":[], "Будущее":[]};
+
+/* ---- вкладки ---- */
+function renderTabs(){const b=document.getElementById("tabs");b.innerHTML="";
+  TABS.forEach(([id,name])=>{const x=document.createElement("button");x.className="tbtn";x.dataset.tab=id;x.textContent=name;x.onclick=()=>showTab(id);b.appendChild(x);});}
+function showTab(id){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("tab-"+id).classList.add("active");
+  document.querySelectorAll(".tbtn").forEach(x=>x.classList.toggle("on",x.dataset.tab===id));}
+
+/* ---- ТАЙМЕР ---- */
+let tDur=25*60, tLeft=25*60, tRun=false, tInt=null;
+function tFmt(s){const m=Math.floor(s/60);return `${m}:${String(s%60).padStart(2,"0")}`;}
+function tRender(){const d=document.getElementById("tDisp");d.textContent=tFmt(Math.max(0,tLeft));
+  d.classList.toggle("warn",tLeft<=60&&tLeft>0);d.classList.toggle("done",tLeft<=0);
+  document.getElementById("tPlay").innerHTML=tRun
+    ? '<svg viewBox="0 0 24 24" width="26" height="26"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="26" height="26"><polygon points="7,4 20,12 7,20" fill="currentColor"/></svg>';}
+function tTick(){tLeft--;if(tLeft<=0){tLeft=0;tStop();}tRender();}
+function tToggle(){if(tLeft<=0)return;tRun=!tRun;if(tRun)tInt=setInterval(tTick,1000);else clearInterval(tInt);tRender();}
+function tStop(){tRun=false;clearInterval(tInt);tRender();}
+function tReset(){tStop();tLeft=tDur;tRender();}
+function tSet(m){tDur=m*60;tLeft=m*60;tStop();}
+function tAdd(m){tLeft=Math.max(0,tLeft+m*60);if(tLeft>0&&!tRun)document.getElementById("tDisp").classList.remove("done");tRender();}
+
+/* ---- сеть ---- */
+async function apiGet(p){const u=APPS_SCRIPT_URL+"?"+Object.entries(p).map(([k,v])=>k+"="+encodeURIComponent(v)).join("&");const r=await fetch(u);return r.json();}
+async function apiPost(b){const r=await fetch(APPS_SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)});return r.json();}
+async function refresh(){setStatus("Загрузка…");
+  try{const [t,i]=await Promise.all([apiGet({action:"totals"}),apiGet({action:"innovations",epoch:roundEpoch})]);
+    totals=(t&&t.totals)||[];opened=(i&&i.opened)||[];setStatus("Обновлено "+new Date().toLocaleTimeString());}
+  catch(e){setStatus("Ошибка связи");console.warn(e);}
+  renderInn();EPOCHS.forEach(renderResults);renderFinal();}
+function setStatus(s){document.getElementById("status").textContent=s;}
+
+/* ---- инновации ---- */
+function renderRoundEpsel(){const b=document.getElementById("roundEpSel");b.innerHTML="";
+  EPOCHS.forEach(ep=>{const x=document.createElement("button");x.className="epb"+(ep===roundEpoch?" on":"");x.textContent=ep;
+    x.onclick=()=>{roundEpoch=ep;renderRoundEpsel();refresh();};b.appendChild(x);});}
+async function toggleInn(o){const isOpen=opened.includes(o.n);setStatus(isOpen?"Закрываю…":"Открываю…");
+  await apiPost({type:"innovation",epoch:roundEpoch,innovation:o.n,action:isOpen?"close":"open"});await refresh();}
+function renderInn(){const box=document.getElementById("innCols");box.innerHTML="";
+  const list=INN[roundEpoch]||[];
+  if(!list.length){box.innerHTML=`<div class="empty" style="grid-column:1/-1">Инновации этой эпохи добавим позже.</div>`;return;}
+  list.forEach(o=>{const on=opened.includes(o.n);const d=document.createElement("div");d.className="ic"+(on?" open":" dim");
+    d.innerHTML=`<div class="votes">✊ ${o.v}</div><img src="${enc(ID+o.id+IT)}" alt=""><div class="nm">${o.n}</div><div class="ef">${o.e}</div><div class="state">${on?"✓ открыта":"закрыта"}</div>`;
+    d.onclick=()=>toggleInn(o);box.appendChild(d);});}
+
+/* ---- результаты ---- */
+function sc(n){return n>0?"p":(n<0?"n":"z");} function sg(n){return (n>0?"+":"")+n;}
+function tableHead(){return `<thead><tr><th style="text-align:left">Команда</th>
+  <th><div class="ic2"><span class="sh loy z">Л</span>Лояльн.</div></th>
+  <th><div class="ic2"><span class="sh eff z">Э</span>Эффект.</div></th>
+  <th><div class="ic2"><span class="sh sig z">С</span>Значим.</div></th>
+  <th><div class="ic2"><span class="star">★</span>Влияние</div></th>
+  <th class="colsep">коэф Л</th><th>коэф Э</th><th>коэф С</th>
+  <th class="colsep">🏆 Репутация</th><th>★ след.</th><th>Место</th></tr></thead>`;}
+function renderResults(epoch){
+  const host=document.getElementById("res-"+epoch);if(!host)return;
+  const rows=totals.filter(r=>r[1]===epoch).map(r=>({team:r[0],loy:r[2],eff:r[3],sig:r[4],infl:r[5],kL:r[6],kE:r[7],kS:r[8],rep:r[9],next:r[10]}));
+  if(!rows.length){host.innerHTML=`<table>${tableHead()}<tbody><tr><td colspan="11" class="empty">Пока нет данных по этой эпохе. Жми «Обновить».</td></tr></tbody></table>`;return;}
+  const ranked=[...rows].sort((a,b)=>b.rep-a.rep);const place={};ranked.forEach((r,i)=>place[r.team]=i+1);const medal={1:"🥇",2:"🥈",3:"🥉"};
+  let body="";rows.forEach(d=>{body+=`<tr class="${place[d.team]<=3?'top':''}">
+    <td class="team">${d.team}</td>
+    <td><span class="val ${sc(d.loy)}">${sg(d.loy)}</span></td><td><span class="val ${sc(d.eff)}">${sg(d.eff)}</span></td><td><span class="val ${sc(d.sig)}">${sg(d.sig)}</span></td>
+    <td><span class="val">${d.infl}</span></td>
+    <td class="colsep coef">×${d.kL}</td><td class="coef">×${d.kE}</td><td class="coef">×${d.kS}</td>
+    <td class="colsep"><span class="total">${d.rep}</span></td><td><span class="star">${d.next}</span></td>
+    <td><span class="rank">${medal[place[d.team]]||place[d.team]}</span></td></tr>`;});
+  host.innerHTML=`<table>${tableHead()}<tbody>${body}</tbody></table>`;
+}
+function renderFinal(){
+  const host=document.getElementById("res-final");
+  const by={};totals.forEach(r=>{const t=r[0];by[t]=by[t]||{rep:0,per:{}};by[t].per[r[1]]=r[9];by[t].rep+=r[9];});
+  const teams=Object.keys(by);
+  if(!teams.length){host.innerHTML=`<div class="empty">Пока нет данных.</div>`;return;}
+  const data=teams.map(t=>({team:t,...by[t],final:by[t].rep}));
+  const ranked=[...data].sort((a,b)=>b.final-a.final);const place={};ranked.forEach((r,i)=>place[r.team]=i+1);const medal={1:"🥇",2:"🥈",3:"🥉"};
+  let body="";data.forEach(d=>{body+=`<tr class="${place[d.team]<=3?'top':''}"><td class="team">${d.team}</td>
+    <td>${d.per["Античность"]??"—"}</td><td>${d.per["Наше время"]??"—"}</td><td>${d.per["Будущее"]??"—"}</td>
+    <td class="colsep"><span class="total">${d.final}</span></td>
+    <td><span class="rank">${medal[place[d.team]]||place[d.team]}</span></td></tr>`;});
+  host.innerHTML=`<table><thead><tr><th style="text-align:left">Команда</th><th>Эпоха I</th><th>Эпоха II</th><th>Эпоха III</th><th class="colsep">🏆 ИТОГ</th><th>Место</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+
+/* ---- PDF ---- */
+let pdfDoc=null, pdfNum=1;
+if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+function loadPdf(ev){const f=ev.target.files[0];if(!f)return;const fr=new FileReader();
+  fr.onload=()=>pdfjsLib.getDocument({data:fr.result}).promise.then(doc=>{pdfDoc=doc;pdfNum=1;renderPdf();});
+  fr.readAsArrayBuffer(f);}
+function renderPdf(){if(!pdfDoc)return;document.getElementById("pdfEmpty").style.display="none";pdfDoc.getPage(pdfNum).then(p=>{
+  const cv=document.getElementById("pdfCanvas"),ctx=cv.getContext("2d");
+  const vp=p.getViewport({scale:1});const scale=Math.min(1500/vp.width,(window.innerHeight*0.82)/vp.height);
+  const v=p.getViewport({scale});cv.width=v.width;cv.height=v.height;p.render({canvasContext:ctx,viewport:v});
+  document.getElementById("pdfInfo").textContent=`слайд ${pdfNum}/${pdfDoc.numPages}`;});}
+function pdfPage(d){if(!pdfDoc)return;pdfNum=Math.min(pdfDoc.numPages,Math.max(1,pdfNum+d));renderPdf();}
+function pdfFull(){const w=document.getElementById("pdfWrap");if(w.requestFullscreen)w.requestFullscreen();}
+document.addEventListener("keydown",e=>{if(!document.getElementById("tab-chronicle").classList.contains("active"))return;
+  if(e.key==="ArrowRight")pdfPage(1);if(e.key==="ArrowLeft")pdfPage(-1);});
+
+function enc(p){return BASE_URL+p.split("/").map(encodeURIComponent).join("/");}
+renderTabs(); renderRoundEpsel(); showTab("round"); refresh();
+</script>
+</body>
+</html>
